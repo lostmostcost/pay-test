@@ -18,9 +18,9 @@ class Event(models.Model):
         return self.subject
 
 class Pay(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='payments')
     subject = models.CharField(max_length=20)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True, null=True)
     payer = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='payments_made')
     members = models.ManyToManyField(CustomUser, related_name='payments_included')
     amount = models.PositiveIntegerField(null=True)
