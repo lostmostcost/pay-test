@@ -11,27 +11,37 @@ class CustomUser(AbstractUser):
 
 class Event(models.Model):
     subject = models.CharField(max_length=20)
-    members = models.ManyToManyField(CustomUser)
-    generated = models.DateTimeField(default=timezone.now)
+    create_date = models.DateTimeField(default=timezone.now)
+
+    def settle(self):
+        unsettled_payments = self.payments.filter(is_settled=False)
+        for pay in unsettled_payments :
+            payer = pay.payer
+            members = pay.members.all()
+            amount = pay.amount
+        pass
 
     def __str__(self):
         return self.subject
+    
+class Member(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='belong_to')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='members')
+    balance = models.IntegerField(default=0)
+    remainder_counts = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.user.username
 
 class Pay(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='payments')
     subject = models.CharField(max_length=20)
     description = models.TextField(blank=True, null=True)
-    payer = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='payments_made')
-    members = models.ManyToManyField(CustomUser, related_name='payments_included')
+    payer = models.ForeignKey(Member, on_delete=models.CASCADE, null=True, related_name='payments_made')
+    members = models.ManyToManyField(Member, related_name='payments_included')
     amount = models.PositiveIntegerField(null=True)
     create_date = models.DateTimeField(default=timezone.now)
-    days_until_deadline = models.IntegerField(default=3)
-    deadline = models.DateTimeField(blank=True)
     is_settled = models.BooleanField(default=False)
-
-    def save(self, *args, **kwargs):
-        self.deadline = self.create_date + timedelta(days=self.days_until_deadline)
-        super().save(*args, **kwargs)
     
     def __str__(self) :
         return self.event.subject +"/"+ self.subject
@@ -40,4 +50,15 @@ class Remit(models.Model):
     remitter = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='remits_to_send')
     receiver = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='remits_to_receive')
     amount = models.PositiveIntegerField()
+    create_date = models.DateTimeField(default=timezone.now)
+    days_until_deadline = models.IntegerField(default=3)
+    deadline = models.DateTimeField(blank=True, null=True)
     is_settled = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.deadline = self.create_date + timedelta(days=self.days_until_deadline)
+            super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.remitter.username + "->" + self.receiver.username + "|" + str(self.amount)
