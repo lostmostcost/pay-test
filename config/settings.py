@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dutchpay.apps.DutchpayConfig',
-    'api.apps.ApiConfig'
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
