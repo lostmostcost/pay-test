@@ -1,4 +1,4 @@
-#!/Users/lmc/Projects/pay-test/env/bin/python3.11
+#!/Users/lmc/Projects/pay-test/venv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys

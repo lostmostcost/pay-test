@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from ..dutchpay.models import Event, Member, Pay, Remit
+from dutchpay.models import Event, Member, Pay, Remit
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta :
         model = Event
-        fields = ['subject', 'creat_date']
+        fields = ['subject', 'create_date']
 
 class MemberSerializer(serializers.ModelSerializer):
     class Meta :

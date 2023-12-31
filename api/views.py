@@ -1,5 +1,5 @@
 from rest_framework import generics
-from ..dutchpay.models import Event, Member, Pay, Remit
+from dutchpay.models import Event, Member, Pay, Remit
 from .serializers import EventSerializer, MemberSerializer, PaySerializer, RemitSerializer
 
 class EventsListAPI(generics.ListCreateAPIView):
