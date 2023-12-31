@@ -13,13 +13,50 @@ class Event(models.Model):
     subject = models.CharField(max_length=20)
     create_date = models.DateTimeField(default=timezone.now)
 
-    def settle(self):
+    def settle_payments(self):
         unsettled_payments = self.payments.filter(is_settled=False)
         for pay in unsettled_payments :
             payer = pay.payer
             members = pay.members.all()
             amount = pay.amount
-        pass
+
+            payer.balance -= amount
+            payer.save()
+
+            equal_share, remainder = divmod(amount, len(members))
+
+            if remainder != 0 :
+                for remain in range(remainder) :
+                    lowest_remainder_user = min(members, key=lambda x: x.remainder_counts)
+                    lowest_remainder_user.balance += 1
+                    lowest_remainder_user.remainder_counts += 1
+                    lowest_remainder_user.save()
+
+
+            for member in members :
+                member.balance += equal_share
+                member.save()
+
+            pay.is_settled = True
+            pay.save()
+    
+    def make_bills(self) :
+        members = self.members.all()
+        while any(member.balance for member in members) :
+            remitter = max(members, key=lambda a : a.balance)
+            receiver = min(members, key=lambda b : b.balance)
+            amount = remitter.balance
+
+            remitter.balance -= amount
+            remitter.save()
+            receiver.balance += amount
+            receiver.save()
+
+            Remit.objects.create(
+                remitter=remitter.user,
+                receiver=receiver.user,
+                amount=amount)
+
 
     def __str__(self):
         return self.subject

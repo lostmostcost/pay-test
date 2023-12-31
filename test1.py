@@ -1,13 +1,10 @@
 import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 from django import setup
+setup()
+
 from django.contrib.auth import logout
 from dutchpay.models import CustomUser, Event, Member, Pay, Remit
-
-def start():
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-    setup()
-
-start()
 
 def Create_User(user) :
     pw = '12345'
@@ -31,5 +28,11 @@ users = [
     ('이효림', '효림', '이', '01037680789'),
 ]
 
-#for user in users :
-#    Create_User(user)
+'''
+for user in users :
+    Create_User(user)
+'''
+event1 = Event.objects.get(id=1)
+
+event1.settle_payments()
+event1.make_bills()
