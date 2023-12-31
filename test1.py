@@ -18,6 +18,23 @@ def Create_User(user) :
     )
     logout(signIn)
 
+def Create_Event(event):
+    Event.objects.create(
+        subject=event[0],
+    )
+
+def Create_Member(user, event):
+    Member.objects.create(
+        user=CustomUser.objects.get(username=user[0]),
+        event=Event.objects.get(subject=event[0]),
+    )
+
+def Create_Pay(pay) :
+    Pay.objects.create(
+        event=Event.objects.get(subject=event[0]),
+        subject=pay[1],
+    )
+
 users = [
     ('이문찬', '문찬', '이', '01036930521'),
     ('이지민', '지민', '이', '01034368788'),
@@ -28,11 +45,22 @@ users = [
     ('이효림', '효림', '이', '01037680789'),
 ]
 
+events = [
+    ('금강산 3차 회식'),
+]
+
+pays = [
+    ('금강산 3차 회식', '1차닭갈비', 64000, '이문찬', ('이문찬','이지민','김유민','안상현','서민주','김시은','이효림'))
+]
+
 '''
 for user in users :
     Create_User(user)
 '''
+
 event1 = Event.objects.get(id=1)
 
 event1.settle_payments()
 event1.make_bills()
+
+print("hello world")

@@ -68,7 +68,7 @@ class Member(models.Model):
     remainder_counts = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return self.user.username
+        return self.user.username + " - " + self.event.subject
 
 class Pay(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='payments')
@@ -81,7 +81,7 @@ class Pay(models.Model):
     is_settled = models.BooleanField(default=False)
     
     def __str__(self) :
-        return self.event.subject +"/"+ self.subject
+        return self.event.subject +" / "+ self.subject
     
 class Remit(models.Model):
     remitter = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='remits_to_send')
@@ -98,4 +98,4 @@ class Remit(models.Model):
             super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.remitter.username + "->" + self.receiver.username + "|" + str(self.amount)
+        return self.remitter.username + " -> " + self.receiver.username + " | " + str(self.amount) +"원"
