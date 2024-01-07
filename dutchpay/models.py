@@ -1,13 +1,7 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import AbstractUser
 from datetime import timedelta
-
-class CustomUser(AbstractUser):
-    bank_account = models.CharField(max_length=20, blank=True, null=True)
-
-    def __str__(self):
-        return self.username
+from users.models import CustomUser
 
 class Event(models.Model):
     subject = models.CharField(max_length=20)
@@ -84,6 +78,7 @@ class Pay(models.Model):
         return self.event.subject +" / "+ self.subject
     
 class Remit(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, related_name='remits')
     remitter = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='remits_to_send')
     receiver = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='remits_to_receive')
     amount = models.PositiveIntegerField()

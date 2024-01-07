@@ -4,12 +4,17 @@ from dutchpay.models import Event, Member, Pay, Remit
 class EventSerializer(serializers.ModelSerializer):
     class Meta :
         model = Event
-        fields = ['subject', 'create_date']
+        fields = ['pk', 'subject', 'create_date']
 
 class MemberSerializer(serializers.ModelSerializer):
+    username = serializers.SerializerMethodField()
+
     class Meta :
         model = Member
-        fields = ['user', 'event', 'balance', 'remainder_counts']
+        fields = ['user','username', 'event', 'balance', 'remainder_counts']
+
+    def get_username(self, obj) :
+        return obj.user.username
 
 class PaySerializer(serializers.ModelSerializer):
     class Meta :
@@ -19,4 +24,4 @@ class PaySerializer(serializers.ModelSerializer):
 class RemitSerializer(serializers.ModelSerializer):
     class Meta :
         model = Remit
-        fields = ['remitter', 'receiver', 'amount', 'days_until_deadline' 'deadline', 'is_settled']
+        fields = ['event', 'remitter', 'receiver', 'amount', 'days_until_deadline', 'deadline', 'is_settled']
