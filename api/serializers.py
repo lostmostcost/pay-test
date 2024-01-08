@@ -11,7 +11,7 @@ class MemberSerializer(serializers.ModelSerializer):
 
     class Meta :
         model = Member
-        fields = ['user','username', 'event', 'balance', 'remainder_counts']
+        fields = ['pk','user','username', 'event', 'balance', 'remainder_counts']
 
     def get_username(self, obj) :
         return obj.user.username
